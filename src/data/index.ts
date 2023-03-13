@@ -23,7 +23,7 @@ export interface iCota {
 
 export const iptuData = {
   ano: 2023,
-  inscricao: "0.328.055-9",
+  inscricao: "",
   total: 4.718,
   cotas: [
     {

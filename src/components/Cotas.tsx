@@ -6,8 +6,6 @@ import Loading from "./loading";
 import styles from "./cotas.module.css";
 
 export default function Cotas({ data }: iCota) {
-  // console.log(cotas);
-
   const [items, setItems] = useState<tCota[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,11 +24,10 @@ export default function Cotas({ data }: iCota) {
 
     const res = getLocalStorageData(data.cotas);
     setItems(res);
-    // console.log(res);
 
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 250);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -117,28 +114,5 @@ export default function Cotas({ data }: iCota) {
           );
         })}
     </>
-    // <main
-    //   className={`${styles.main} ${
-    //     item.pago ? styles.bgPaid : styles.bgNotPaid
-    //   }`}
-    // >
-    //   <li
-    //     style={{
-    //       listStyle: "none",
-    //     }}
-    //   >
-    //     <h4 style={{ textTransform: "uppercase" }}>{item.title}</h4>
-    //     <p>valor: {formatValor}</p>
-    //     <p>vencimento: {item.vencimento}</p>
-    //   </li>
-    //   <button
-    //     onClick={handleClick}
-    //     className={`${styles.btn} ${
-    //       item.pago ? styles.btnPaid : styles.btnNotPaid
-    //     }`}
-    //   >
-    //     Pago? {item.pago ? "SIM" : "NÃO"}
-    //   </button>
-    // </main>
   );
 }
