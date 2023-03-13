@@ -1,50 +1,73 @@
 .main {
   width: 100%;
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
+  text-align: center;
   color: #112;
   background-color: white;
-  border-radius: 10px;
-  box-shadow: 1px 1px 2px #0007;
+  box-shadow: 3px 3px 4px #0007;
   margin: 10px 0;
   padding: 1rem;
-  border: 1px solid;
-  transition: 0.2s;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  text-transform: uppercase;
+  transition: 0.25s;
 }
 
-.bgPaid {
+.main strong {
+  font-size: 14px;
+}
+
+.cotaTitle {
+  transition: 0.25s;
+}
+
+.bPaid {
   border-color: seagreen;
 }
-.bgNotPaid {
+.bNotPaid {
   border-color: firebrick;
 }
 
 .btn {
-  color: white;
+  color: silver;
+  background-color: transparent;
   border: 0;
-  border-radius: 2px;
-  box-shadow: 1px 1px 2px #0007;
-  width: 100%;
-  height: 30px;
+  border-bottom: 2px solid silver;
+  /* border-radius: 2px; */
+  /* box-shadow: 1px 1px 2px #0005; */
+  /* width: 60px; */
+  /* height: 24px; */
   font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 2px;
+  font-size: 16px;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  margin-top: 10px;
+  margin-left: 10px;
+  line-height: 1;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
   transition: 0.2s;
-  display: grid;
-  place-self: center;
-  place-items: center;
-}
-
-.btn:hover {
-  cursor: pointer;
-  box-shadow: 2px 2px 3px #0007;
 }
 
 .btnPaid {
-  background-color: seagreen;
+  color: seagreen;
+  border-color: seagreen;
 }
 .btnNotPaid {
-  background-color: firebrick;
+  color: firebrick;
+  border-color: firebrick;
+}
+
+.paidOrNotPaid {
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 700px) {
+  .btn:hover {
+    cursor: pointer;
+  }
 }

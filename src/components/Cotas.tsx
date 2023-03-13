@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { iCota, tCota } from "@/data";
+import { iData, tCota } from "@/data";
 import Loading from "./loading";
 import styles from "./cotas.module.css";
 
-export default function Cotas({ data }: iCota) {
+export default function Cotas({ data }: iData) {
   const [items, setItems] = useState<tCota[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,13 +38,29 @@ export default function Cotas({ data }: iCota) {
     }
   }, [items]);
 
-  const handleClick = (cota: tCota) => {
+  const handleCotaPaid = (cota: tCota) => {
     setItems((prevState) => [
       ...prevState.map((prevCota) => {
         if (prevCota === cota) {
           return {
             ...prevCota,
-            pago: !prevCota.pago,
+            pago: true,
+          };
+        }
+        return {
+          ...prevCota,
+        };
+      }),
+    ]);
+  };
+
+  const handleCotaNotPaid = (cota: tCota) => {
+    setItems((prevState) => [
+      ...prevState.map((prevCota) => {
+        if (prevCota === cota) {
+          return {
+            ...prevCota,
+            pago: false,
           };
         }
         return {
@@ -64,18 +80,7 @@ export default function Cotas({ data }: iCota) {
     <>
       {loading && <Loading />}
 
-      {!loading && (
-        <h2
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "0 10px",
-          }}
-        >
-          <span>IPTU {data.ano}</span> <span>{formattedTotal}</span>
-        </h2>
-      )}
+      {!loading && <h2>Gerador de parcelas</h2>}
 
       {!loading &&
         itemsBiggerThenZero &&
@@ -90,7 +95,7 @@ export default function Cotas({ data }: iCota) {
             <div
               key={cota.title}
               className={`${styles.main} ${
-                cota.pago ? styles.bgPaid : styles.bgNotPaid
+                cota.pago ? styles.bPaid : styles.bNotPaid
               }`}
             >
               <li
@@ -98,18 +103,36 @@ export default function Cotas({ data }: iCota) {
                   listStyle: "none",
                 }}
               >
-                <h4 style={{ textTransform: "uppercase" }}>{cota.title}</h4>
-                <p>valor: {formatValor}</p>
-                <p>vencimento: {cota.vencimento}</p>
+                <h3
+                  className={styles.cotaTitle}
+                  style={{ color: `${cota.pago ? "seagreen" : "firebrick"}` }}
+                >
+                  {cota.title}
+                </h3>
+                <p>
+                  <strong>valor:</strong> {formatValor}
+                </p>
+                <p>
+                  <strong>vencimento:</strong> {cota.vencimento}
+                </p>
+                <div className={styles.paidOrNotPaid}>
+                  <strong>pago: </strong>
+                  <button
+                    onClick={() => handleCotaPaid(cota)}
+                    className={`${styles.btn} ${cota.pago && styles.btnPaid}`}
+                  >
+                    sim
+                  </button>
+                  <button
+                    onClick={() => handleCotaNotPaid(cota)}
+                    className={`${styles.btn} ${
+                      !cota.pago && styles.btnNotPaid
+                    }`}
+                  >
+                    não
+                  </button>
+                </div>
               </li>
-              <button
-                onClick={() => handleClick(cota)}
-                className={`${styles.btn} ${
-                  cota.pago ? styles.btnPaid : styles.btnNotPaid
-                }`}
-              >
-                Pago? {cota.pago ? "SIM" : "NÃO"}
-              </button>
             </div>
           );
         })}

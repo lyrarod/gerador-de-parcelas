@@ -1,7 +1,7 @@
-import { iptuData } from "@/data";
+import { data } from "@/data";
 
 export const getData = async () => {
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  return iptuData;
+  return data;
 };

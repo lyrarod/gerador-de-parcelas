@@ -17,71 +17,71 @@ export type tCota = {
   pago: boolean;
 };
 
-export interface iCota {
+export interface iData {
   data: tData;
 }
 
-export const iptuData = {
+export const data = {
   ano: 2023,
   inscricao: "",
   total: 4.718,
   cotas: [
     {
-      title: "cota 01",
+      title: "parcela 01",
       vencimento: "07/02/2023",
       valor: 471.8,
       pago: true,
     },
     {
-      title: "cota 02",
+      title: "parcela 02",
       vencimento: "07/03/2023",
       valor: 471.8,
       pago: true,
     },
     {
-      title: "cota 03",
+      title: "parcela 03",
       vencimento: "10/04/2023",
       valor: 471.8,
       pago: false,
     },
     {
-      title: "cota 04",
+      title: "parcela 04",
       vencimento: "08/05/2023",
       valor: 471.8,
       pago: false,
     },
     {
-      title: "cota 05",
+      title: "parcela 05",
       vencimento: "07/06/2023",
       valor: 471.8,
       pago: false,
     },
     {
-      title: "cota 06",
+      title: "parcela 06",
       vencimento: "07/07/2023",
       valor: 471.8,
       pago: false,
     },
     {
-      title: "cota 07",
+      title: "parcela 07",
       vencimento: "07/08/2023",
       valor: 471.8,
       pago: false,
     },
     {
-      title: "cota 08",
+      title: "parcela 08",
       vencimento: "08/09/2023",
       valor: 471.8,
       pago: false,
     },
     {
-      title: "cota 09",
+      title: "parcela 09",
       vencimento: "06/10/2023",
       valor: 471.8,
       pago: false,
     },
     {
-      title: "cota 10",
+      title: "parcela 10",
       vencimento: "08/11/2023",
       valor: 471.8,
       pago: false,

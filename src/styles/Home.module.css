@@ -6,6 +6,7 @@
   align-items: center;
   flex-direction: column;
   justify-content: center;
+  /* background: linear-gradient(45deg, cyan, #112); */
 }
 
 @media (min-width: 700px) {
