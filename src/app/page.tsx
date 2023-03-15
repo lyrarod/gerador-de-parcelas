@@ -1,5 +1,6 @@
-import { getData } from "@/services";
-import Cotas from "@/components/Cotas";
+import { getData } from "@/lib";
+import { Parcel } from "@/components/parcel";
+
 import styles from "@/styles/Home.module.css";
 
 export default async function Page() {
@@ -7,7 +8,7 @@ export default async function Page() {
 
   return (
     <main className={styles.main}>
-      <Cotas data={data} />
+      <Parcel data={data} />
     </main>
   );
 }

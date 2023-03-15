@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
 export const metadata = {
-  title: "IPTU | Controle de pagamentos",
+  title: "Gerador de Parcelas",
 };
 
 export default function RootLayout({
