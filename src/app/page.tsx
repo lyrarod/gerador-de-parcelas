@@ -1,14 +1,12 @@
-import { getData } from "@/lib";
-import { Parcel } from "@/components/parcel";
+"use client";
 
+import { Parcel } from "@/components/Parcel";
 import styles from "@/styles/Home.module.css";
 
-export default async function Page() {
-  const data = await getData();
-
+export default function Page() {
   return (
     <main className={styles.main}>
-      <Parcel data={data} />
+      <Parcel />
     </main>
   );
 }

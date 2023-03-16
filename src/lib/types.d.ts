@@ -1,17 +1,19 @@
 export type tData = {
-  id: number;
-  title: string;
+  id: string;
+  title?: string;
   value: number;
   percentage: number;
   numberOfParcel: number;
-  parcel: {
-    id: number;
+  createdAt: Date;
+  parcels: {
+    id: string;
+    calculatedValue: number;
     maturity: string;
     isPaid: boolean;
   }[];
-}[];
+};
 
-export type tParcel = {
+export type tParcels = {
   id: number;
   maturity: string;
   isPaid: boolean;

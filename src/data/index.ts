@@ -5,6 +5,6 @@ export const data = [
     value: 471.8,
     percentage: 6,
     numberOfParcel: 10,
-    parcel: [{ id: 1, maturity: "02/04/1983", isPaid: false }],
+    parcels: [{ id: 1, maturity: "02/04/1983", isPaid: false }],
   },
 ];

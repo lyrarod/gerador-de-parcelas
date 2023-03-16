@@ -1,17 +1,15 @@
 "use client";
 
+import { tData } from "@/lib/types";
 import { useRef, useState } from "react";
-import { iData, tData } from "@/lib/types";
-// import Loading from "./loading";
 
 import styles from "./parcel.module.css";
 
-export function Parcel({ data }: iData) {
+export function Parcel() {
   console.log("render...");
 
-  // const [loading, setLoading] = useState(true);
-  // const [parcels, setParcels] = useState<tData[]>([]);
-  const [btnLoading, setBtnLoading] = useState(false);
+  const [data, setData] = useState<tData[]>([]);
+  const [btnLoading, setBtnLoading] = useState<boolean>(false);
 
   const titleRef = useRef<HTMLInputElement>(null!);
   const valueRef = useRef<HTMLInputElement>(null!);
@@ -63,11 +61,20 @@ export function Parcel({ data }: iData) {
     const percentage = Number(percentageRef.current?.value);
     const numberOfParcel = Number(numberOfParcelRef.current?.value);
 
+    let calculatedValue: number;
+    !percentage
+      ? (calculatedValue = Number((value / numberOfParcel).toFixed(2)))
+      : (calculatedValue = Number(((value * percentage) / 100).toFixed(2)));
+
     const parcels = Array.from({ length: numberOfParcel }, (_, i) => {
       const id = String(Date.now() + i + 1);
       return {
         id,
-        index: i + 1,
+        calculatedValue,
+        maturity: new Date().toLocaleString("pt-BR", {
+          dateStyle: "short",
+        }),
+        isPaid: false,
       };
     });
 
@@ -77,10 +84,12 @@ export function Parcel({ data }: iData) {
       value,
       percentage,
       numberOfParcel,
+      createdAt: new Date(),
       parcels,
     };
 
     setTimeout(() => {
+      setData([newParcel]);
       const { target } = evt as any;
       target.reset();
 
@@ -91,34 +100,79 @@ export function Parcel({ data }: iData) {
 
   return (
     <>
-      {
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <input ref={titleRef} placeholder="title..." required />
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <input ref={titleRef} placeholder="Ex: Cartão de crédito..." />
 
-          <input
-            ref={valueRef}
-            type={"number"}
-            required
-            placeholder="value..."
-          />
-          <input
-            ref={numberOfParcelRef}
-            type={"number"}
-            required
-            placeholder="numberOfParcel..."
-          />
+        <input
+          ref={valueRef}
+          type={"number"}
+          step=".001"
+          required
+          placeholder="valor..."
+          autoFocus
+        />
+        <input
+          ref={numberOfParcelRef}
+          type={"number"}
+          required
+          placeholder="numero de parcelas..."
+        />
 
-          <input
-            ref={percentageRef}
-            type={"number"}
-            required
-            placeholder="percentage..."
-          />
-          <button type="submit" disabled={btnLoading}>
-            {btnLoading ? "calculating..." : "calculate"}
-          </button>
-        </form>
-      }
+        <input
+          ref={percentageRef}
+          type={"number"}
+          placeholder="porcentagem..."
+        />
+        <button type="submit" disabled={btnLoading}>
+          {!btnLoading ? "calcular" : "calculando..."}
+        </button>
+      </form>
+
+      {data.length > 0 &&
+        data?.map((parcel) => {
+          const { parcels, value, percentage, numberOfParcel, title } = parcel;
+          const formatedValue = new Intl.NumberFormat("pt-BT", {
+            style: "currency",
+            currency: "BRL",
+          }).format(value);
+
+          return (
+            <div key={parcel.id} style={{ padding: "1rem", width: "100%" }}>
+              <h2
+                style={{
+                  display: "inline-block",
+                  width: "100%",
+                  background: "seagreen",
+                  textAlign: "center",
+                }}
+              >
+                <p>{title && title}</p>
+                TOTAL: {formatedValue}
+                <p>{percentage ? `PORCENTAGEM: ${percentage}%` : null}</p>
+                <p>{numberOfParcel ? `PARCELAS: ${numberOfParcel}` : null}</p>
+              </h2>
+              {parcels.map((parcel, i) => {
+                const formatedCalculatedValue = new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(parcel.calculatedValue);
+
+                return (
+                  <div
+                    key={parcel.id}
+                    style={{ padding: ".5rem 0", borderBottom: "1px solid" }}
+                  >
+                    <strong>PARCELA {i + 1}</strong>
+
+                    <p>{formatedCalculatedValue}</p>
+                    <p>pago: {parcel.isPaid ? "sim" : "não"}</p>
+                    <p>vencimento: {parcel.maturity}</p>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
     </>
   );
 }
