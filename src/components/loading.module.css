@@ -1,17 +1,30 @@
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: linear-gradient(45deg, seagreen, transparent, #111);
+  overflow: hidden;
+}
+
 .loader {
   position: relative;
   width: 100px;
   height: 100px;
-  display: grid;
-  place-items: center;
-  border-left: 1px solid darkslategray;
+  border-left: 1px solid silver;
   border-radius: 100%;
   animation: animate 1s linear infinite;
 }
 
 .text {
+  color: silver;
   position: absolute;
-  color: darkslategray;
 }
 
 @keyframes animate {

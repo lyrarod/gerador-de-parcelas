@@ -1,14 +1,15 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { tData } from "@/lib/types";
-import { useRef, useState } from "react";
-
 import styles from "./parcel.module.css";
+import Loading from "./loading";
 
 export function Parcel() {
   console.log("render...");
 
   const [data, setData] = useState<tData[]>([]);
+  const [loading, setLoading] = useState(true);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
 
   const titleRef = useRef<HTMLInputElement>(null!);
@@ -17,39 +18,33 @@ export function Parcel() {
   const numberOfParcelRef = useRef<HTMLInputElement>(null!);
 
   //Rendering on browser or client side
-  // const isClientSide = typeof window !== "undefined";
+  const isClientSide = typeof window !== "undefined";
   //checks if the items are not empty
-  // const itemsBiggerThenZero = parcels?.length > 0;
+  const isData = data?.length > 0;
 
-  // useEffect(() => {
-  //   const getLocalStorageData = () => {
-  //     if (isClientSide) {
-  //       const res = localStorage.getItem("@ParcelData");
-  //       return res ? JSON.parse(res) : data;
-  //     }
-  //   };
+  useEffect(() => {
+    const getLocalStorageData = () => {
+      if (isClientSide) {
+        const res = localStorage.getItem("@ParcelData");
+        return res ? JSON.parse(res) : data;
+      }
+    };
 
-  //   const res = getLocalStorageData();
-  //   setParcels(res);
+    const res = getLocalStorageData();
+    setData(res);
 
-  //   const timer = setTimeout(() => {
-  //     setLoading(false);
-  //   }, 0);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
 
-  //   return () => clearTimeout(timer);
-  // }, []);
+    return () => clearTimeout(timer);
+  }, []);
 
-  // useEffect(() => {
-  //   if (isClientSide && itemsBiggerThenZero) {
-  //     localStorage.setItem("@ParcelData", JSON.stringify(parcels));
-  //   }
-  // }, [parcels]);
-
-  // const formattedTotal = new Intl.NumberFormat("pt-BR", {
-  //   style: "currency",
-  //   currency: "BRL",
-  //   maximumSignificantDigits: 6,
-  // }).format(data.total);
+  useEffect(() => {
+    if (isClientSide && isData) {
+      localStorage.setItem("@ParcelData", JSON.stringify(data));
+    }
+  }, [data]);
 
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -89,10 +84,10 @@ export function Parcel() {
     };
 
     setTimeout(() => {
-      setData([newParcel]);
       const { target } = evt as any;
       target.reset();
 
+      setData([newParcel]);
       console.log(newParcel);
       setBtnLoading(false);
     }, 1000);
@@ -100,35 +95,40 @@ export function Parcel() {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <input ref={titleRef} placeholder="Ex: Cartão de crédito..." />
+      {loading ? (
+        <Loading />
+      ) : (
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <input ref={titleRef} placeholder="Ex: Cartão de crédito..." />
 
-        <input
-          ref={valueRef}
-          type={"number"}
-          step=".001"
-          required
-          placeholder="valor..."
-          autoFocus
-        />
-        <input
-          ref={numberOfParcelRef}
-          type={"number"}
-          required
-          placeholder="numero de parcelas..."
-        />
+          <input
+            ref={valueRef}
+            type={"number"}
+            step=".01"
+            required
+            placeholder="valor..."
+            autoFocus
+          />
+          <input
+            ref={numberOfParcelRef}
+            type={"number"}
+            required
+            placeholder="numero de parcelas..."
+          />
 
-        <input
-          ref={percentageRef}
-          type={"number"}
-          placeholder="porcentagem..."
-        />
-        <button type="submit" disabled={btnLoading}>
-          {!btnLoading ? "calcular" : "calculando..."}
-        </button>
-      </form>
+          <input
+            ref={percentageRef}
+            type={"number"}
+            placeholder="porcentagem..."
+          />
+          <button type="submit" disabled={btnLoading}>
+            {!btnLoading ? "calcular" : "calculando..."}
+          </button>
+        </form>
+      )}
 
-      {data.length > 0 &&
+      {!loading &&
+        !btnLoading &&
         data?.map((parcel) => {
           const { parcels, value, percentage, numberOfParcel, title } = parcel;
           const formatedValue = new Intl.NumberFormat("pt-BT", {
