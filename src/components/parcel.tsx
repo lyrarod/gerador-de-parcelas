@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { tData } from "@/lib/types";
-import styles from "./parcel.module.css";
 import Loading from "./loading";
+import styles from "./parcel.module.css";
 
 export function Parcel() {
   console.log("render...");
 
   const [data, setData] = useState<tData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
 
   const titleRef = useRef<HTMLInputElement>(null!);
@@ -18,13 +18,20 @@ export function Parcel() {
   const numberOfParcelRef = useRef<HTMLInputElement>(null!);
 
   //Rendering on browser or client side
-  const isClientSide = typeof window !== "undefined";
+  const clientSide = typeof window !== "undefined";
   //checks if the items are not empty
   const isData = data?.length > 0;
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+
+    let bodyEl = document.querySelector("body")!;
+    loading
+      ? (bodyEl.style.overflow = "hidden")
+      : (bodyEl.style.overflow = "auto");
+
     const getLocalStorageData = () => {
-      if (isClientSide) {
+      if (clientSide) {
         const res = localStorage.getItem("@ParcelData");
         return res ? JSON.parse(res) : data;
       }
@@ -35,13 +42,13 @@ export function Parcel() {
 
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1500);
+    }, 3000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
-    if (isClientSide && isData) {
+    if (clientSide && isData) {
       localStorage.setItem("@ParcelData", JSON.stringify(data));
     }
   }, [data]);
@@ -90,7 +97,7 @@ export function Parcel() {
       setData([newParcel]);
       console.log(newParcel);
       setBtnLoading(false);
-    }, 1000);
+    }, 2000);
   };
 
   return (
@@ -99,7 +106,11 @@ export function Parcel() {
         <Loading />
       ) : (
         <form onSubmit={handleSubmit} className={styles.form}>
-          <input ref={titleRef} placeholder="Ex: Cartão de crédito..." />
+          <input
+            ref={titleRef}
+            placeholder="Ex: Cartão de crédito..."
+            required
+          />
 
           <input
             ref={valueRef}
@@ -107,7 +118,6 @@ export function Parcel() {
             step=".01"
             required
             placeholder="valor..."
-            autoFocus
           />
           <input
             ref={numberOfParcelRef}
@@ -121,7 +131,7 @@ export function Parcel() {
             type={"number"}
             placeholder="porcentagem..."
           />
-          <button type="submit" disabled={btnLoading}>
+          <button className={styles.btn} type="submit" disabled={btnLoading}>
             {!btnLoading ? "calcular" : "calculando..."}
           </button>
         </form>
