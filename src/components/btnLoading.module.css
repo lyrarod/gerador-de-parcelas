@@ -1,0 +1,14 @@
+.loader {
+  border-radius: 100%;
+  border-left: 2px solid;
+  animation: animate 0.7s linear infinite;
+}
+
+@keyframes animate {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,6 +1,6 @@
 import styles from "./loading.module.css";
 
-export default function Loading() {
+export function Loading() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.loader} />

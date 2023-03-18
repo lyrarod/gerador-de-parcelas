@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { tData } from "@/lib/types";
-import Loading from "./loading";
+import { fnFormattedCurrency, fnFormattedDate } from "@/lib";
+import { Loading } from "./loading";
+import { BtnLoading } from "./btnLoading";
 import styles from "./parcel.module.css";
 
 export function Parcel() {
@@ -17,9 +19,7 @@ export function Parcel() {
   const percentageRef = useRef<HTMLInputElement>(null!);
   const numberOfParcelRef = useRef<HTMLInputElement>(null!);
 
-  //Rendering on browser or client side
-  const clientSide = typeof window !== "undefined";
-  //checks if the items are not empty
+  //checks if the data state are not empty
   const isData = data?.length > 0;
 
   useEffect(() => {
@@ -31,10 +31,8 @@ export function Parcel() {
       : (bodyEl.style.overflow = "auto");
 
     const getLocalStorageData = () => {
-      if (clientSide) {
-        const res = localStorage.getItem("@ParcelData");
-        return res ? JSON.parse(res) : data;
-      }
+      const res = localStorage.getItem("@ParcelData");
+      return res ? JSON.parse(res) : data;
     };
 
     const res = getLocalStorageData();
@@ -42,13 +40,13 @@ export function Parcel() {
 
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [loading]);
 
   useEffect(() => {
-    if (clientSide && isData) {
+    if (isData) {
       localStorage.setItem("@ParcelData", JSON.stringify(data));
     }
   }, [data]);
@@ -63,7 +61,7 @@ export function Parcel() {
     const percentage = Number(percentageRef.current?.value);
     const numberOfParcel = Number(numberOfParcelRef.current?.value);
 
-    let calculatedValue: number;
+    let calculatedValue: number = 0;
     !percentage
       ? (calculatedValue = Number((value / numberOfParcel).toFixed(2)))
       : (calculatedValue = Number(((value * percentage) / 100).toFixed(2)));
@@ -73,9 +71,7 @@ export function Parcel() {
       return {
         id,
         calculatedValue,
-        maturity: new Date().toLocaleString("pt-BR", {
-          dateStyle: "short",
-        }),
+        maturity: new Date().toString(),
         isPaid: false,
       };
     });
@@ -86,18 +82,20 @@ export function Parcel() {
       value,
       percentage,
       numberOfParcel,
-      createdAt: new Date(),
+      calculatedValue,
+      createdAt: new Date().toString(),
       parcels,
     };
 
     setTimeout(() => {
       const { target } = evt as any;
       target.reset();
+      titleRef.current.focus();
 
       setData([newParcel]);
       console.log(newParcel);
       setBtnLoading(false);
-    }, 2000);
+    }, 1000);
   };
 
   return (
@@ -109,7 +107,7 @@ export function Parcel() {
           <input
             ref={titleRef}
             placeholder="Ex: Cartão de crédito..."
-            required
+            autoFocus
           />
 
           <input
@@ -132,7 +130,7 @@ export function Parcel() {
             placeholder="porcentagem..."
           />
           <button className={styles.btn} type="submit" disabled={btnLoading}>
-            {!btnLoading ? "calcular" : "calculando..."}
+            {!btnLoading ? "calcular" : <BtnLoading />}
           </button>
         </form>
       )}
@@ -140,32 +138,50 @@ export function Parcel() {
       {!loading &&
         !btnLoading &&
         data?.map((parcel) => {
-          const { parcels, value, percentage, numberOfParcel, title } = parcel;
-          const formatedValue = new Intl.NumberFormat("pt-BT", {
-            style: "currency",
-            currency: "BRL",
-          }).format(value);
+          const {
+            calculatedValue,
+            parcels,
+            value,
+            percentage,
+            numberOfParcel,
+            title,
+          } = parcel;
+
+          const formattedValue = fnFormattedCurrency(value);
+          const formattedCalculatedValue = fnFormattedCurrency(calculatedValue);
 
           return (
             <div key={parcel.id} style={{ padding: "1rem", width: "100%" }}>
-              <h2
+              <div
                 style={{
                   display: "inline-block",
                   width: "100%",
-                  background: "seagreen",
-                  textAlign: "center",
+                  color: "#121212",
+                  background: "silver",
+                  padding: "1rem",
+                  borderRadius: "8px",
+                  // textAlign: "center",
                 }}
               >
-                <p>{title && title}</p>
-                TOTAL: {formatedValue}
-                <p>{percentage ? `PORCENTAGEM: ${percentage}%` : null}</p>
-                <p>{numberOfParcel ? `PARCELAS: ${numberOfParcel}` : null}</p>
-              </h2>
-              {parcels.map((parcel, i) => {
-                const formatedCalculatedValue = new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                }).format(parcel.calculatedValue);
+                {title ? (
+                  <p>
+                    <strong>{title}</strong>
+                  </p>
+                ) : null}
+                <p>
+                  <strong>Total: {formattedValue}</strong>
+                  {percentage ? ` (Pagar ${percentage}%)` : null}
+                </p>
+                <p>
+                  <strong>Parcelas: {formattedCalculatedValue}</strong>
+                  {numberOfParcel ? ` (${numberOfParcel}x)` : null}
+                </p>
+              </div>
+              {/* {parcels?.map((parcel, i) => {
+                const formattedCalculatedValue = fnFormattedCurrency(
+                  parcel.calculatedValue
+                );
+                const formattedMaturity = fnFormattedDate(parcel.maturity);
 
                 return (
                   <div
@@ -174,12 +190,12 @@ export function Parcel() {
                   >
                     <strong>PARCELA {i + 1}</strong>
 
-                    <p>{formatedCalculatedValue}</p>
+                    <p>{formattedCalculatedValue}</p>
                     <p>pago: {parcel.isPaid ? "sim" : "não"}</p>
-                    <p>vencimento: {parcel.maturity}</p>
+                    <p>vencimento: {formattedMaturity}</p>
                   </div>
                 );
-              })}
+              })} */}
             </div>
           );
         })}

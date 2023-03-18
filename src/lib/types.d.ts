@@ -1,22 +1,24 @@
 export type tData = {
   id: string;
-  title?: string;
   value: number;
+  title?: string;
+  createdAt: string;
   percentage: number;
   numberOfParcel: number;
-  createdAt: Date;
+  calculatedValue: number;
   parcels: {
     id: string;
-    calculatedValue: number;
     maturity: string;
     isPaid: boolean;
+    calculatedValue: number;
   }[];
 };
 
 export type tParcels = {
-  id: number;
+  id: string;
   maturity: string;
   isPaid: boolean;
+  calculatedValue: number;
 };
 
 export interface iData {

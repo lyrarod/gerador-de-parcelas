@@ -5,3 +5,14 @@ export const getData = async () => {
 
   return data;
 };
+
+export const fnFormattedCurrency = (value: number) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
+};
+
+export const fnFormattedDate = (date: string) => {
+  return new Date(date).toLocaleString("pt-BR", { dateStyle: "short" });
+};
