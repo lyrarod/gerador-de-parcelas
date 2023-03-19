@@ -211,8 +211,9 @@ export function Parcel() {
                     lineHeight: "1",
                     cursor: "pointer",
                   }}
-                  children="x"
-                />
+                >
+                  x
+                </button>
               </div>
             </div>
           );
