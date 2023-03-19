@@ -7,10 +7,19 @@ import { Loading } from "./loading";
 import { BtnLoading } from "./btnLoading";
 import styles from "./parcel.module.css";
 
+const clientSide = typeof window !== "undefined";
+
+const getLocalStorageData = () => {
+  if (clientSide) {
+    const res = localStorage.getItem("@ParcelData");
+    return res ? JSON.parse(res) : [];
+  }
+};
+
 export function Parcel() {
   console.log("render...");
 
-  const [data, setData] = useState<tData[]>([]);
+  const [data, setData] = useState<tData[]>(getLocalStorageData);
   const [loading, setLoading] = useState<boolean>(true);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
 
@@ -18,9 +27,6 @@ export function Parcel() {
   const valueRef = useRef<HTMLInputElement>(null!);
   const percentageRef = useRef<HTMLInputElement>(null!);
   const numberOfParcelRef = useRef<HTMLInputElement>(null!);
-
-  //checks if the data state are not empty
-  const isData = data?.length > 0;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,25 +36,15 @@ export function Parcel() {
       ? (bodyEl.style.overflow = "hidden")
       : (bodyEl.style.overflow = "auto");
 
-    const getLocalStorageData = () => {
-      const res = localStorage.getItem("@ParcelData");
-      return res ? JSON.parse(res) : data;
-    };
-
-    const res = getLocalStorageData();
-    setData(res);
-
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [loading]);
 
   useEffect(() => {
-    if (isData) {
-      localStorage.setItem("@ParcelData", JSON.stringify(data));
-    }
+    localStorage.setItem("@ParcelData", JSON.stringify(data));
   }, [data]);
 
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
@@ -63,39 +59,40 @@ export function Parcel() {
 
     let calculatedValue: number = 0;
     !percentage
-      ? (calculatedValue = Number((value / numberOfParcel).toFixed(2)))
-      : (calculatedValue = Number(((value * percentage) / 100).toFixed(2)));
+      ? (calculatedValue = Number(value / numberOfParcel))
+      : (calculatedValue = Number((value * percentage) / 100));
+
+    const id = String(Date.now());
 
     const parcels = Array.from({ length: numberOfParcel }, (_, i) => {
-      const id = String(Date.now() + i + 1);
+      const id = String(Date.now() + (i + 1));
       return {
         id,
         calculatedValue,
-        maturity: new Date().toString(),
+        maturity: String(new Date()),
         isPaid: false,
       };
     });
 
     const newParcel = {
-      id: String(Date.now()),
+      id,
       title,
       value,
       percentage,
       numberOfParcel,
       calculatedValue,
-      createdAt: new Date().toString(),
+      createdAt: String(new Date()),
       parcels,
     };
 
     setTimeout(() => {
       const { target } = evt as any;
       target.reset();
-      titleRef.current.focus();
 
-      setData([newParcel]);
+      setData((prev) => [newParcel, ...prev]);
       console.log(newParcel);
       setBtnLoading(false);
-    }, 1000);
+    }, 1500);
   };
 
   return (
@@ -107,7 +104,7 @@ export function Parcel() {
           <input
             ref={titleRef}
             placeholder="Ex: Cartão de crédito..."
-            autoFocus
+            required
           />
 
           <input
@@ -136,66 +133,87 @@ export function Parcel() {
       )}
 
       {!loading &&
-        !btnLoading &&
         data?.map((parcel) => {
-          const {
-            calculatedValue,
-            parcels,
-            value,
-            percentage,
-            numberOfParcel,
-            title,
-          } = parcel;
-
-          const formattedValue = fnFormattedCurrency(value);
-          const formattedCalculatedValue = fnFormattedCurrency(calculatedValue);
+          const formattedValue = fnFormattedCurrency(parcel.value);
+          const formattedCalculatedValue = fnFormattedCurrency(
+            parcel.calculatedValue
+          );
+          const formattedCreatedAt = fnFormattedDate({
+            date: parcel.createdAt,
+            style: "full",
+          });
 
           return (
-            <div key={parcel.id} style={{ padding: "1rem", width: "100%" }}>
+            <div
+              key={parcel.id}
+              style={{
+                padding: ".5rem 1rem",
+                width: "100%",
+              }}
+            >
               <div
                 style={{
-                  display: "inline-block",
                   width: "100%",
-                  color: "#121212",
-                  background: "silver",
                   padding: "1rem",
+                  color: "#121212",
                   borderRadius: "8px",
-                  // textAlign: "center",
+                  background: "silver",
+                  position: "relative",
                 }}
               >
-                {title ? (
+                {parcel.title ? (
                   <p>
-                    <strong>{title}</strong>
+                    <strong>{parcel.title}</strong>
                   </p>
                 ) : null}
                 <p>
                   <strong>Total: {formattedValue}</strong>
-                  {percentage ? ` (Pagar ${percentage}%)` : null}
+                  {parcel.percentage ? ` (Pagar ${parcel.percentage}%)` : null}
                 </p>
-                <p>
-                  <strong>Parcelas: {formattedCalculatedValue}</strong>
-                  {numberOfParcel ? ` (${numberOfParcel}x)` : null}
+                {parcel.numberOfParcel && parcel.numberOfParcel > 1 ? (
+                  <p>
+                    <strong>Parcelas: {formattedCalculatedValue}</strong>
+                    {` (${parcel.numberOfParcel}x)`}
+                  </p>
+                ) : (
+                  <p>
+                    <strong>Parcela única: {formattedValue}</strong>
+                    {` (à vista)`}
+                  </p>
+                )}
+
+                <p
+                  style={{
+                    fontSize: ".875rem",
+                    fontStyle: "oblique",
+                  }}
+                >
+                  {formattedCreatedAt}
                 </p>
+
+                <button
+                  onClick={() =>
+                    setData((prev) => [
+                      ...prev.filter((p) => p.id !== parcel.id),
+                    ])
+                  }
+                  style={{
+                    position: "absolute",
+                    top: "1rem",
+                    right: "1rem",
+                    padding: "4px 8px",
+                    color: "firebrick",
+                    background: "transparent",
+                    border: "2px solid",
+                    borderRadius: "100%",
+                    fontWeight: "700",
+                    fontSize: "16px",
+                    lineHeight: "1",
+                    cursor: "pointer",
+                  }}
+                  children="x"
+                />
               </div>
-              {/* {parcels?.map((parcel, i) => {
-                const formattedCalculatedValue = fnFormattedCurrency(
-                  parcel.calculatedValue
-                );
-                const formattedMaturity = fnFormattedDate(parcel.maturity);
-
-                return (
-                  <div
-                    key={parcel.id}
-                    style={{ padding: ".5rem 0", borderBottom: "1px solid" }}
-                  >
-                    <strong>PARCELA {i + 1}</strong>
-
-                    <p>{formattedCalculatedValue}</p>
-                    <p>pago: {parcel.isPaid ? "sim" : "não"}</p>
-                    <p>vencimento: {formattedMaturity}</p>
-                  </div>
-                );
-              })} */}
             </div>
           );
         })}

@@ -13,6 +13,14 @@ export const fnFormattedCurrency = (value: number) => {
   }).format(value);
 };
 
-export const fnFormattedDate = (date: string) => {
-  return new Date(date).toLocaleString("pt-BR", { dateStyle: "short" });
+type DateProps = {
+  date: string | number | Date;
+  style?: "full" | "long" | "medium" | "short" | undefined;
+};
+
+export const fnFormattedDate = ({ date, style = "full" }: DateProps) => {
+  return new Date(date).toLocaleString("pt-BR", {
+    dateStyle: style,
+    timeStyle: "short",
+  });
 };
