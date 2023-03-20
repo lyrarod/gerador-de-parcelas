@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { tData } from "@/lib/types";
-import { fnFormattedCurrency, fnFormattedDate } from "@/lib";
+import { toCurrency, toDate } from "@/lib";
 import { Loading } from "./loading";
 import { BtnLoading } from "./btnLoading";
 import styles from "./parcel.module.css";
@@ -134,11 +134,9 @@ export function Parcel() {
 
       {!loading &&
         data?.map((parcel) => {
-          const formattedValue = fnFormattedCurrency(parcel.value);
-          const formattedCalculatedValue = fnFormattedCurrency(
-            parcel.calculatedValue
-          );
-          const formattedCreatedAt = fnFormattedDate({
+          const formattedValue = toCurrency(parcel.value);
+          const formattedCalculatedValue = toCurrency(parcel.calculatedValue);
+          const formattedCreatedAt = toDate({
             date: parcel.createdAt,
             style: "full",
           });
@@ -202,9 +200,9 @@ export function Parcel() {
                     top: "1rem",
                     right: "1rem",
                     padding: "4px 8px",
-                    color: "firebrick",
+                    color: "inherit",
                     background: "transparent",
-                    border: "2px solid",
+                    border: "none",
                     borderRadius: "100%",
                     fontWeight: "700",
                     fontSize: "16px",

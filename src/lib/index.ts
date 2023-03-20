@@ -6,7 +6,7 @@ export const getData = async () => {
   return data;
 };
 
-export const fnFormattedCurrency = (value: number) => {
+export const toCurrency = (value: number) => {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -18,9 +18,16 @@ type DateProps = {
   style?: "full" | "long" | "medium" | "short" | undefined;
 };
 
-export const fnFormattedDate = ({ date, style = "full" }: DateProps) => {
-  return new Date(date).toLocaleString("pt-BR", {
+export const toDate = ({ date, style = "full" }: DateProps) => {
+  return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: style,
     timeStyle: "short",
-  });
+  }).format(new Date(date));
+};
+
+export const toDecimal = (value: string) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "decimal",
+    currency: "BRL",
+  }).format(parseFloat(value));
 };
