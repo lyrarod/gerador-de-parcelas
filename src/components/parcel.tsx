@@ -132,33 +132,18 @@ export function Parcel() {
         </form>
       )}
 
-      {!loading &&
-        data?.map((parcel) => {
-          const formattedValue = toCurrency(parcel.value);
-          const formattedCalculatedValue = toCurrency(parcel.calculatedValue);
-          const formattedCreatedAt = toDate({
-            date: parcel.createdAt,
-            style: "full",
-          });
+      <div style={{ padding: "1rem" }}>
+        {!loading &&
+          data?.map((parcel) => {
+            const formattedValue = toCurrency(parcel.value);
+            const formattedCalculatedValue = toCurrency(parcel.calculatedValue);
+            const formattedCreatedAt = toDate({
+              date: parcel.createdAt,
+              style: "full",
+            });
 
-          return (
-            <div
-              key={parcel.id}
-              style={{
-                padding: ".5rem 1rem",
-                width: "100%",
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  padding: "1rem",
-                  color: "#121212",
-                  borderRadius: "8px",
-                  background: "silver",
-                  position: "relative",
-                }}
-              >
+            return (
+              <li key={parcel.id} className={styles.card}>
                 {parcel.title ? (
                   <p>
                     <strong>{parcel.title}</strong>
@@ -197,8 +182,8 @@ export function Parcel() {
                   }
                   style={{
                     position: "absolute",
-                    top: "1rem",
-                    right: "1rem",
+                    top: ".5rem",
+                    right: ".5rem",
                     padding: "4px 8px",
                     color: "inherit",
                     background: "transparent",
@@ -212,10 +197,10 @@ export function Parcel() {
                 >
                   x
                 </button>
-              </div>
-            </div>
-          );
-        })}
+              </li>
+            );
+          })}
+      </div>
     </>
   );
 }

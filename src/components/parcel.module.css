@@ -70,3 +70,18 @@
     cursor: pointer;
   }
 }
+
+.card {
+  list-style: none;
+  background: silver;
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: #121212;
+  position: relative;
+  border-radius: 6px;
+}
+
+.card:nth-child(even) {
+  background: seagreen;
+}
