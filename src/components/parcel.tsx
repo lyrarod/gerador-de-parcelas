@@ -1,24 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { tData } from "@/lib/types";
-import { toCurrency, toDate } from "@/lib";
+import { tData } from "../../types";
+import { getLocalStorageData, toCurrency, toDate } from "@/lib";
 import { Loading } from "./loading";
 import { BtnLoading } from "./btnLoading";
 import styles from "./parcel.module.css";
 
-const clientSide = typeof window !== "undefined";
-
-const getLocalStorageData = () => {
-  if (clientSide) {
-    const res = localStorage.getItem("@ParcelData");
-    return res ? JSON.parse(res) : [];
-  }
-};
-
 export function Parcel() {
-  console.log("render...");
-
   const [data, setData] = useState<tData[]>(getLocalStorageData);
   const [loading, setLoading] = useState<boolean>(true);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
@@ -57,10 +46,11 @@ export function Parcel() {
     const percentage = Number(percentageRef.current?.value);
     const numberOfParcel = Number(numberOfParcelRef.current?.value);
 
-    let calculatedValue: number = 0;
-    !percentage
-      ? (calculatedValue = Number(value / numberOfParcel))
-      : (calculatedValue = Number((value * percentage) / 100));
+    const valuePercentage = Number((value * percentage) / 100);
+    const valueNumberOfParcel = Number(value / numberOfParcel);
+    const parcelPercentage = Number((valueNumberOfParcel * percentage) / 100);
+
+    let calculatedValue = !percentage ? valueNumberOfParcel : valuePercentage;
 
     const id = String(Date.now());
 
@@ -68,9 +58,9 @@ export function Parcel() {
       const id = String(Date.now() + (i + 1));
       return {
         id,
+        isPaid: false,
         calculatedValue,
         maturity: String(new Date()),
-        isPaid: false,
       };
     });
 
@@ -81,6 +71,9 @@ export function Parcel() {
       percentage,
       numberOfParcel,
       calculatedValue,
+      valuePercentage,
+      valueNumberOfParcel,
+      parcelPercentage,
       createdAt: String(new Date()),
       parcels,
     };
@@ -136,7 +129,7 @@ export function Parcel() {
         {!loading &&
           data?.map((parcel) => {
             const formattedValue = toCurrency(parcel.value);
-            const formattedCalculatedValue = toCurrency(parcel.calculatedValue);
+
             const formattedCreatedAt = toDate({
               date: parcel.createdAt,
               style: "full",
@@ -144,56 +137,60 @@ export function Parcel() {
 
             return (
               <li key={parcel.id} className={styles.card}>
-                {parcel.title ? (
-                  <p>
-                    <strong>{parcel.title}</strong>
-                  </p>
-                ) : null}
+                {parcel.title && <h3>{parcel.title}</h3>}
                 <p>
-                  <strong>Total: {formattedValue}</strong>
-                  {parcel.percentage ? ` (Pagar ${parcel.percentage}%)` : null}
+                  Total: <strong>{formattedValue}</strong>
                 </p>
+
                 {parcel.numberOfParcel && parcel.numberOfParcel > 1 ? (
                   <p>
-                    <strong>Parcelas: {formattedCalculatedValue}</strong>
+                    Parcelas:{" "}
+                    <strong>{toCurrency(parcel.valueNumberOfParcel)}</strong>
                     {` (${parcel.numberOfParcel}x)`}
                   </p>
                 ) : (
                   <p>
-                    <strong>Parcela única: {formattedValue}</strong>
+                    Parcela única: <strong>{formattedValue}</strong>
                     {` (à vista)`}
                   </p>
                 )}
 
+                {parcel.percentage && parcel.numberOfParcel ? (
+                  <>
+                    <hr />
+                    <p>
+                      Total:
+                      <strong>{` ${toCurrency(
+                        parcel.valuePercentage
+                      )}`}</strong>
+                      {` (${parcel.percentage}% do total) `}
+                    </p>
+                    <p>
+                      Parcelas:{" "}
+                      <strong>{`${toCurrency(
+                        parcel.parcelPercentage
+                      )}`}</strong>
+                      {` (${parcel.numberOfParcel}x) `}
+                    </p>
+                  </>
+                ) : null}
+
                 <p
                   style={{
-                    fontSize: ".875rem",
-                    fontStyle: "oblique",
+                    fontSize: ".75rem",
                   }}
                 >
                   {formattedCreatedAt}
                 </p>
 
                 <button
-                  onClick={() =>
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setData((prev) => [
                       ...prev.filter((p) => p.id !== parcel.id),
-                    ])
-                  }
-                  style={{
-                    position: "absolute",
-                    top: ".5rem",
-                    right: ".5rem",
-                    padding: "4px 8px",
-                    color: "inherit",
-                    background: "transparent",
-                    border: "none",
-                    borderRadius: "100%",
-                    fontWeight: "700",
-                    fontSize: "16px",
-                    lineHeight: "1",
-                    cursor: "pointer",
+                    ]);
                   }}
+                  title="delete"
                 >
                   x
                 </button>

@@ -31,3 +31,12 @@ export const toDecimal = (value: string) => {
     currency: "BRL",
   }).format(parseFloat(value));
 };
+
+export const getLocalStorageData = () => {
+  const clientSide = typeof window !== "undefined";
+
+  if (clientSide) {
+    const res = localStorage.getItem("@ParcelData");
+    return res ? JSON.parse(res) : [];
+  }
+};

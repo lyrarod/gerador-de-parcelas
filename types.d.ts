@@ -6,6 +6,9 @@ export type tData = {
   percentage: number;
   numberOfParcel: number;
   calculatedValue: number;
+  valuePercentage: number;
+  parcelPercentage: number;
+  valueNumberOfParcel: number;
   parcels: {
     id: string;
     maturity: string;
